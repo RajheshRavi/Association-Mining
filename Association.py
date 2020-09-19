@@ -65,25 +65,37 @@ L.append({})
 for i in C[1]:
     if C[1][i] >= supportCount:
         L[1][i] = C[1][i]
-print(L[1])
-        
-'''
+#print(L[1])
+
+length = 2        
 while len(L[-1]) > 0:
     length += 1
     lis = list(L[-1])
-    setTemp = set()
-    lis = []
+    temp = []
     for i in range(len(lis)-1):
-        setTemp = set()
-        for ele in L[-1][lis[i]]:
-            setTemp.add(ele)
         for j in range(i+1,len(lis)):
-            for ele in L[-1][lis[j]]:
-                setTemp.add(ele)
-                if len(setTemp) == length:
-                    lis.append(setTemp)
-                setTemp = set(ele)
-    print(lis)
-    break
-'''            
-    
+            if len(set(list(lis[i])+list(lis[j]))) == length:
+                temp.append(set(list(lis[i])+list(lis[j])))
+    C.append({})
+    for i in temp:
+        C[-1][tuple(i)] = 0
+    #print(C[-1])
+    for ele in C[-1]:
+        flg = True
+        for ele1 in ageVCat:
+            flg = True
+            #print('Hai')
+            for i in ele:
+                #print('i loop')
+                if i not in ageVCat[ele1]:
+                    flg = False
+                    break
+            if flg :
+                C[-1][ele] += 1
+    #print(C[-1])
+    L.append({})
+    for i in C[-1]:
+        if C[-1][i] >= supportCount:
+            L[-1][i] = C[-1][i]
+print(L[-1])        # Filal Set is empty
+print(L[-2])        # Final Rules
