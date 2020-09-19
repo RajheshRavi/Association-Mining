@@ -36,7 +36,12 @@ for i in range(len(dataFrame['Content Rating'])):
     else:
         ageVCat[dataFrame['Content Rating'][i]] = [dataFrame['Category'][i]]
 print(ageVCat)
-        
+
+attributes = set()
+for i in ageVCat:
+    for j in ageVCat[i]:
+        attributes.add(j)
+
 supportCount = int(input('Enter the Support Count '))
 
 C = []              # C matrix
@@ -75,7 +80,7 @@ for i in C[1]:
 #print(L[1])
 
 length = 2        
-while len(L[-1]) > 0:   # For length > 2
+while len(L[-1]) > 0 and length <= len(attributes):   # For length > 2
     length += 1
     lis = list(L[-1])
     temp = []
@@ -106,3 +111,40 @@ while len(L[-1]) > 0:   # For length > 2
             L[-1][i] = C[-1][i]
 #print(L[-1])        # Filal Set is empty
 print(L[-2])        # Final Rules
+
+if len(L) > 2:
+    confidence = float(input("Entere your confidence value "))
+#    total3 = 0
+#    total2 = 0
+    total = 0
+    for i in L[0]:
+        total += L[0][i]
+#   for i in L[-2]:
+#        total2 += L[-2][i]
+#    for ele in L[-3]:
+#        total3 += L[-3][ele]
+    for record in L[-2]:
+        lis = []
+        lisRec = list(record)
+        for i in range(len(record)):
+            if len(record) > 2:
+                lis.append((tuple(lisRec[0:i]+lisRec[i+1:]),lisRec[i]))
+            else:
+                if i == 0:
+                    lis.append((lisRec[1],lisRec[0]))
+                else:
+                    lis.append((lisRec[0],lisRec[1]))
+        for i in lis:
+            if i[0] in L[-3]:
+                if (L[-2][record]*100.0)/(L[-3][i[0]]*1.0) >= confidence:
+                    # Using Support Count
+                    print(i[0],"->",i[1]," has confidence of",(L[-2][record]*1.0)/(L[-3][i[0]]*1.0)*100.0,"%")
+                    print(i[0],"->",i[1]," has lift of",(L[-2][record]*1.0)/(L[-3][i[0]]*L[0][i[1]]/total))
+                    '''
+                if (L[-2][record]*1.0/total2)/(L[-3][i[0]]*1.0/total3) >= confidence:
+                    # Using Support
+                    print(i[0],"->",i[1]," has confidence of",(L[-2][record]*1.0/total2)/(L[-3][i[0]]*1.0/total3)*100.0,"%")
+                    print(i[0],"->",i[1]," has lift of",(L[-2][record]*1.0/total2)/(L[-3][i[0]]*1.0/total3*L[0][i[1]]/total)*100.0)
+                    '''
+else:
+    print("No Association Found")
