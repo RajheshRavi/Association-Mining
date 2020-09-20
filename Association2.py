@@ -1,45 +1,33 @@
 import pandas as pd
 
 dataFrame = pd.read_csv('googleplaystore.csv')
-'''
-category = {}
-
-for i in dataFrame['Category']:
-    if i in category:
-        category[i] += 1
-    else:
-        category[i] = 1
-print(category)
-
-age = {}
-for i in dataFrame['Content Rating']:
-    if i in age:
-        age[i] += 1
-    else:
-        age[i] = 1
-print(age)
-'''
 
 '''
 
 Apriori Algorithm
 
 '''
-
-ageVCat = {}
-for i in range(len(dataFrame['Content Rating'])):
-    #print(dataFrame['Content Rating'][i],dataFrame['Category'][i])
-    if dataFrame['Content Rating'][i] in ageVCat :
-        if dataFrame['Category'][i] not in ageVCat[dataFrame['Content Rating'][i]]:
-            #print(dataFrame['Content Rating'][i],dataFrame['Category'][i])
-            ageVCat[dataFrame['Content Rating'][i]].append(dataFrame['Category'][i])
+def split(a):
+    if int(a)+.5 <= a :
+        return int(a)+.5
     else:
-        ageVCat[dataFrame['Content Rating'][i]] = [dataFrame['Category'][i]]
-print(ageVCat)
+        return int(a)
+
+ratVCat = {}
+dataFrameFillNan = dataFrame['Rating'].fillna(1)
+for i in range(len(dataFrameFillNan)):
+    #print(dataFrame['Content Rating'][i],dataFrame['Category'][i])
+    if split(dataFrameFillNan[i]) in ratVCat :
+        if dataFrame['Category'][i] not in ratVCat[split(dataFrameFillNan[i])]:
+            #print(dataFrame['Content Rating'][i],dataFrame['Category'][i])
+            ratVCat[split(dataFrameFillNan[i])].append(dataFrame['Category'][i])
+    else:
+        ratVCat[split(dataFrameFillNan[i])] = [dataFrame['Category'][i]]
+print(ratVCat)
 
 attributes = set()
-for i in ageVCat:
-    for j in ageVCat[i]:
+for i in ratVCat:
+    for j in ratVCat[i]:
         attributes.add(j)
 
 supportCount = int(input('Enter the Support Count '))
@@ -49,8 +37,8 @@ L = []              # L matrix
 notNullFlg = True
 
 C.append({})        # C 1 
-for i in ageVCat:
-    for j in ageVCat[i]:
+for i in ratVCat:
+    for j in ratVCat[i]:
         if j in C[0]:
             C[0][j] += 1
         else:
@@ -70,8 +58,8 @@ for i in range(len(lis)-1):
         C[1][(lis[i],lis[j])] = 0
 #print(C[1])
 for i in C[1]:
-    for j in ageVCat:
-        if i[0] in ageVCat[j] and i[1] in ageVCat[j]:
+    for j in ratVCat:
+        if i[0] in ratVCat[j] and i[1] in ratVCat[j]:
             C[1][i] += 1
 L.append({})        # L 2
 for i in C[1]:
@@ -97,12 +85,12 @@ while len(L[-1]) > 0 and length <= len(attributes):   # For length > 2
     for ele in C[-1]:
         #print(ele)
         flg = True
-        for ele1 in ageVCat:
+        for ele1 in ratVCat:
             flg = True
             #print('Hai')
             for i in ele:
                 #print('i loop')
-                if i not in ageVCat[ele1]:
+                if i not in ratVCat[ele1]:
                     flg = False
                     break
             if flg :
